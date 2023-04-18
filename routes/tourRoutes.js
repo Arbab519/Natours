@@ -1,31 +1,7 @@
-const express = require("express");
-const fs = require('fs');
-const morgan = require("morgan");
-const app = express();
-
-//MiddleWare
-app.use(morgan("dev"));
-app.use(express.json());
-
-app.use(((req ,res,next)=>{
-    console.log("hello from middleware");
-    next();
-}));
-
-app.use(((req ,res,next)=>{
-    res.requestTime = new Date().toISOString;   
-    next();
-}))
- 
-
-const port = 3000;
-app.listen(port,()=>{
-    console.log(`App is running on port ${port}`);
-});
-
- const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`,'utf-8'));
+const express = require('express');
 
 
+//! HANDLERS
 const getAllTours= (req,res)=>{
     const result= res.status(200).json({
         status :"success",
@@ -116,62 +92,9 @@ const createTour =(req,res)=>{
     });
 };
 
-// ! User ROUTES     
-
-const getAllUsers  =(req,res)=>{
-    res.status(201).json({
-        status: "fail",
-        message: "this route is not defined yet"
-    }) 
-};
-
-const createUser  =(req,res)=>{
-    res.status(201).json({
-        status: "fail",
-        message: "this route is not defined yet"
-    }) 
-};
-
-const deleteUser  =(req,res)=>{
-    res.status(201).json({
-        status: "fail",
-        message: "this route is not defined yet"
-    }) 
-};
-
-const updateUser  =(req,res)=>{
-    res.status(201).json({
-        status: "fail",
-        message: "this route is not defined yet"
-    }) 
-};
-
-const getUser  =(req,res)=>{
-    res.status(201).json({
-        status: "fail",
-        message: "this route is not defined yet"
-    }) 
-};
-
-
-
-
-// app.post('/api/v1/tours',createTour);
-// app.get('/api/v1/tours',getAllTours);
-// app.get('/api/v1/tours/:id',getTour);
-// app.patch('/api/v1/tours/:id',updateTour);
-// app.delete('/api/v1/tours/:id',deleteTour);
-
-//By chaining
-
-// !Tour Routes 
-
 // !Mounting Routers step1
 const tourRouter = express.Router();
-const userRouter = express.Router();
-
 // change (app) with routers name and remove common path 
-
 tourRouter
 .route('/')
 .get(getAllTours)
@@ -183,20 +106,3 @@ tourRouter
     .get(getTour)
     .patch(updateTour)
     .delete(deleteTour);
-
- //!Users Routes
- userRouter
- .route('/')
- .get(getAllUsers)
- .get(createUser);
- userRouter
-    .route('/:id')
-    .post(createUser)
-    .get(getUser)
-    .patch(updateUser)
-    .delete(deleteUser);
-
-// !Mounting Routers final
-//write common route and  add router in a middleware
-app.use("/api/v1/tours", tourRouter);
-app.use("/api/v1/users", userRouter);
