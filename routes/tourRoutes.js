@@ -1,6 +1,9 @@
 const express = require('express');
 
 
+// !Read Toursimple.json
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`,'utf-8'));
+
 //! HANDLERS
 const getAllTours= (req,res)=>{
     const result= res.status(200).json({
@@ -93,16 +96,20 @@ const createTour =(req,res)=>{
 };
 
 // !Mounting Routers step1
-const tourRouter = express.Router();
+const router = express.Router();
 // change (app) with routers name and remove common path 
-tourRouter
+router
 .route('/')
 .get(getAllTours)
 .get(createTour);
 
-tourRouter
+router
     .route('/:id')
     .post(createTour)
     .get(getTour)
     .patch(updateTour)
     .delete(deleteTour);
+
+
+    //!Export tourRouter
+module.exports = router;
