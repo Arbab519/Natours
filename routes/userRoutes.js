@@ -42,12 +42,10 @@ const getUser  =(req,res)=>{
 const router = express.Router();
 
  //!Users Routes
- router
- .route('/')
+ router.route('/')
  .get(getAllUsers)
  .get(createUser);
- router
-    .route('/:id')
+ router.route('/:id')
     .post(createUser)
     .get(getUser)
     .patch(updateUser)

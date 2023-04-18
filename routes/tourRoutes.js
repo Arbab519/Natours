@@ -1,11 +1,12 @@
 const express = require('express');
+const fs = require('fs');
 
 
 // !Read Toursimple.json
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`,'utf-8'));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`,'utf-8'));
 
 //! HANDLERS
-const getAllTours= (req,res)=>{
+const getAllTours= (req,res)=>{  
     const result= res.status(200).json({
         status :"success",
         result : tours.length,
@@ -98,13 +99,11 @@ const createTour =(req,res)=>{
 // !Mounting Routers step1
 const router = express.Router();
 // change (app) with routers name and remove common path 
-router
-.route('/')
+router.route('/')
 .get(getAllTours)
 .get(createTour);
 
-router
-    .route('/:id')
+router.route('/:id')
     .post(createTour)
     .get(getTour)
     .patch(updateTour)
