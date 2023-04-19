@@ -11,7 +11,11 @@ const tourRoutes = require('./routes/tourRoutes');
 
 
 //!MiddleWare
-app.use(morgan("dev"));
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan("dev"));
+}
+
+
 app.use(express.json());
 
 app.use(((req ,res,next)=>{
@@ -24,12 +28,11 @@ app.use(((req ,res,next)=>{
     next();
 }))
  
-const port = 3000;
-app.listen(port,()=>{
-    console.log(`App is running on port ${port}`);
-});
 
-// !Mounting Routers final
+// !Mounting Routers 
 //write common route and  add router in a middleware
 app.use("/api/v1/tours", tourRoutes);
 app.use("/api/v1/users", userRoutes);
+
+//Exports for server.js
+module.exports=app;
