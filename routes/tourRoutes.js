@@ -5,11 +5,11 @@ const tourControllers = require('./../controllers/tourControllers.js');
 const router = express.Router();
 
 
-// change (app) with routers name and remove common path 
- 
-    router.route('/')
+// change (app) with (router)  and remove common path 
+
+router.route('/')
 .get(tourControllers.getAllTours)
-.get(tourControllers.createTour);
+.post(tourControllers.createTour);
 
 router.route('/:id')
     .get(tourControllers.getTour)

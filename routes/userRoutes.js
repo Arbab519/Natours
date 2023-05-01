@@ -7,7 +7,7 @@ const router = express.Router();
  //!Users Routes
  router.route('/')
  .get(getAllUsers)
- .get(createUser);
+ .post(createUser);
  router.route('/:id')
     .get(getUser)
     .patch(updateUser)

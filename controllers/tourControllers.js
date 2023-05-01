@@ -1,30 +1,38 @@
-const Tour =require('../models/toursModels');
+const Tour =require('./../models/toursModels');
 
-exports.createTour = async (req,res)=>{
-try {
-    //! previous method
-    // const newTour= new Tour({});
-    // newTour.save().then().catch();
-    //!easy method
-    const newTour = await Tour.create(req.body);
-    res.status(201).json({
-        status: "success",
-        data: {
-        tour: newTour   
-        }
-    });
-} catch (error) {
-    res.status(400).json({
-        status: "fail",
-        message: {
-        tour: newTour
-        }
-    }) ;
-}
-};
+
+
+
 exports.getAllTours= async(req,res)=>{
     try {
-        const tours = await Tour.find();
+        console.log(req.query);
+    //!BUILT QUERY
+     //? 1) Filtering
+     
+     // create shallow copy
+        const queryObj= {...req.query};
+        // list of excludedFields might be in route
+        const excludedFields= ['page','sort','limit','fields'];
+        //delete these excludedfields from route 
+        excludedFields.forEach(el=> delete queryObj[el]);  
+
+     //? 2) Advance filtering
+          const querystr= JSON.stringify(queryObj);
+          querystr.replace(/\b(gte|gt|lte|le)\b/g,match => `$ ${match}`);
+          console.log(JSON.parse(querystr));   
+        
+     const query =  Tour.find(queryObj);
+
+        // {difficulty : 'easy', duration: {$gte : 5} }
+
+        // const tours = await Tour.find()
+        // .where('difficulty')
+        // .equals('easy')
+        // .where('duration')
+        // .equals(5);
+    
+    //!EXECUTE QUERY
+        const tours = await Tour.find(query);
             res.status(200).json({
               status :"success",
               result : tours.length,
@@ -32,15 +40,41 @@ exports.getAllTours= async(req,res)=>{
                   tours: tours
               }
             });
-        
-    } catch (err) {
-        res.status(404).json({
-            status: 'fail',
-            message: err
-        })
+            console.log(tours);
+            
+        } catch (err) {
+            res.status(404).json({
+                status: 'fail',
+                message: err
+            })
+            console.log(err);
     }  
 };
 
+
+//! previous method
+// const newTour= new Tour({});
+// newTour.save().then().catch();
+
+exports.createTour = async (req,res)=>{
+    console.log(req);
+try {
+    //!easy method
+    const newTour = await Tour.create(req.body);
+    res.status(200).json({
+        status: "success",
+        data: {
+        tour: newTour   
+        }
+    });
+} catch (err) {
+    console.log(err);
+    res.status(400).json({
+        status: "fail",
+        message: err
+    }) ;
+}
+};
 exports.getTour= async (req,res)=>{
     try {
         // Tour.findOne({_id : req.params.id}); previous method
