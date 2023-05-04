@@ -7,7 +7,7 @@ exports.getAllTours= async(req,res)=>{
     try {
         console.log(req.query);
     //!BUILT QUERY
-     //? 1) Filtering
+     //! 1A) Filtering
      
      // create shallow copy
         const queryObj= {...req.query};
@@ -16,23 +16,52 @@ exports.getAllTours= async(req,res)=>{
         //delete these excludedfields from route 
         excludedFields.forEach(el=> delete queryObj[el]);  
 
-     //? 2) Advance filtering
-          const querystr= JSON.stringify(queryObj);
-          querystr.replace(/\b(gte|gt|lte|le)\b/g,match => `$ ${match}`);
-          console.log(JSON.parse(querystr));   
+     //! 1B) Advance filtering
+          let querystr= JSON.stringify(queryObj);
+          querystr= querystr.replace(/\b(gte|gt|lte|le)\b/g,match => `$${match}`);
+        //   console.log(JSON.parse(querystr));   
         
-     const query =  Tour.find(queryObj);
+     let query =  Tour.find(JSON.parse(querystr));
 
-        // {difficulty : 'easy', duration: {$gte : 5} }
 
+     //! 2) Sorting
+     if(req.query.sort){
+        const sortBy= req.query.sort.split(',').join(' ');
+        query = query.sort(sortBy)
+     }else{
+        query = query.sort('-createdAt');  
+     }
+
+     //! 3) Field limiting
+        if(req.query.fields){
+            const fields= req.query.fields.split(',').join(' ');
+            query = query.select(fields)
+         }else{
+            query = query.select('-__v');  
+         }
+
+     //! 4) pagination
+     // *1 to covert in to number || is used to assign default value 
+      const page = req.query.page * 1 || 1;
+      const limit = req.query.limit * 1|| 100;
+      const skip = (page-1)*limit;
+      query= query.skip(skip).limit(limit);
+
+      if(req.query.page){
+        const numTours= await Tour.countDocuments();
+        if(skip > numTours) throw new Error('This page does not exist');
+      }
+
+      // {difficulty : 'easy', duration: {$gte : 5} }
+      
         // const tours = await Tour.find()
         // .where('difficulty')
         // .equals('easy')
         // .where('duration')
         // .equals(5);
     
-    //!EXECUTE QUERY
-        const tours = await Tour.find(query);
+        //!EXECUTE QUERY
+            const tours = await Tour.find(query);
             res.status(200).json({
               status :"success",
               result : tours.length,
@@ -40,7 +69,7 @@ exports.getAllTours= async(req,res)=>{
                   tours: tours
               }
             });
-            console.log(tours);
+            // console.log(tours);
             
         } catch (err) {
             res.status(404).json({
