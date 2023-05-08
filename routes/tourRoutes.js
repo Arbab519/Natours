@@ -5,7 +5,9 @@ const tourControllers = require('./../controllers/tourControllers.js');
 const router = express.Router();
 
 
-router.route('/top-5-cheap').get(tourControllers.aliasTopTours, tourControllers.getAllTours)
+router.route('/top-5-cheap').get(tourControllers.aliasTopTours, tourControllers.getAllTours);
+router.route('/tour-stats').get(tourControllers.getToursStats);
+router.route('/monthly-plan/:year').get(tourControllers.getMonthlyPlan);
 
 
 
